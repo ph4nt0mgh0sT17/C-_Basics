@@ -1,3 +1,7 @@
+/*
+	Showing while cycle!
+*/
+
 #include <iostream>
 #include <iomanip>
 
