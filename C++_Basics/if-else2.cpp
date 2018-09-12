@@ -1,3 +1,7 @@
+/***********************************************
+*   Using characters in if, else if branches   *   
+************************************************/
+
 #include <iostream>
 
 using namespace std;

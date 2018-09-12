@@ -1,3 +1,7 @@
+/*********************************************
+*   Using global, local and own namespaces   *
+**********************************************/
+
 #include <iostream>
 
 // global constant

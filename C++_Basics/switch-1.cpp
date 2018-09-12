@@ -1,3 +1,7 @@
+/**********************************************
+*   Using switch (multiple if and if else)    *
+***********************************************/
+
 #include <iostream>
 #include <string>
 #include <ctime>

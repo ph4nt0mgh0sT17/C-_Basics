@@ -1,3 +1,7 @@
+/************************************************
+*   Using different functions with same name    *
+*************************************************/
+
 #include <iostream>
 #include <string>
 

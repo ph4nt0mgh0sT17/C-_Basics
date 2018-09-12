@@ -1,3 +1,7 @@
+/**************************************************
+*   Creating first simple console application.    *
+***************************************************/
+
 //For input and output
 #include <iostream>
 

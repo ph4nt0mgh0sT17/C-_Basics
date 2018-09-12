@@ -1,3 +1,7 @@
+/******************************************************
+*   Using exceptions for avoiding application crash   *
+*******************************************************/
+
 #include <iostream>
 #include <exception>
 #include <stdexcept>

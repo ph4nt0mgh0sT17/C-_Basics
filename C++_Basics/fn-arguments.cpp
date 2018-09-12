@@ -1,7 +1,12 @@
+/************************************
+*   Using and creating functions    *
+*************************************/
+
 #include <iostream>
 
 using namespace std;
 
+// will commenty tomorrow once I understand it...
 void cannot_change_byValue(int fa, int fb)
 {
 	int help_d = fa;
