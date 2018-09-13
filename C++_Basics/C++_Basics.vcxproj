@@ -19,15 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="exception-str.cpp" />
     <ClCompile Include="fn-arguments.cpp" />
-    <ClCompile Include="if-else2.cpp" />
-    <ClCompile Include="op-link.cpp" />
-    <ClCompile Include="print.cpp" />
-    <ClCompile Include="scope-names.cpp" />
-    <ClCompile Include="start.cpp" />
-    <ClCompile Include="switch-1.cpp" />
-    <ClCompile Include="while-1.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
