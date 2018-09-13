@@ -6,7 +6,7 @@
 
 using namespace std;
 
-// will commenty tomorrow once I understand it...
+// will commenty tomorrow oncfe I understand it...
 void cannot_change_byValue(int fa, int fb)
 {
 	int help_d = fa;
