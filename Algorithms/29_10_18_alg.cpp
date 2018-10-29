@@ -2,22 +2,22 @@
 
 using namespace std;
 
-
-int** allocation(int ROWS, int COLS)
+// & need to be used to reference to array dynamic
+void allocation(int ROWS, int COLS, int **&arr)
 {
-	int **arr2D = new int*[ROWS];
+	arr = new int*[ROWS];
 	for (int i = 0; i < ROWS; i++)
 	{
-		arr2D[i] = new int[COLS];
+		arr[i] = new int[COLS];
 
 	}
 
-	return arr2D;
+	
 }
 
-int** load_data(int ROWS, int COLS, int** arr)
+
+void initialize_2d(int** arr, const unsigned ROWS, const unsigned COLS)
 {
-	
 	for (int i = 0; i < ROWS; i++)
 	{
 		for (int j = 0; j < COLS; j++)
@@ -25,29 +25,27 @@ int** load_data(int ROWS, int COLS, int** arr)
 			arr[i][j] = i * j;
 		}
 	}
-
-	return arr;
 }
 
-void deallocation(int ROWS, int COLS, int** arr)
+void print_2d(int** arr, const unsigned ROWS, const unsigned COLS)
 {
 	for (int i = 0; i < ROWS; i++)
 	{
-		delete[] arr[i];
-		//p2D[i] = nullptr;
+		for (int j = 0; j < COLS; j++)
+		{
+			cout << arr[i][j] << "; \t";
+		}
 
+		cout << endl;
 	}
-
-	delete[] arr;
-	arr = nullptr;
 }
 
 int main(void)
 {
 	cout << "Hello, world!";
 
-	const int ROWS = 10000;
-	const int COLS = 11000;
+	const int ROWS = 10;
+	const int COLS = 10;
 
 	// operators for getting address -> [ '&' and 'new' ]
 
@@ -55,18 +53,14 @@ int main(void)
 
 	cout << endl;
 
-	
+	int** p2D;
 	// inicialization and allocation
-	int** p2D = allocation(ROWS, COLS);
-
-	// load data to array2D
-	p2D = load_data(ROWS, COLS, p2D);
-
+	allocation(ROWS, COLS, p2D);
+	initialize_2d(p2D, ROWS, COLS);
+	print_2d(p2D, ROWS, COLS);
 	
-	
-	// Deallocation
-	deallocation(ROWS, COLS, p2D);
 
+	//cout << p2D[0];
 
 	system("pause");
 	return (0);
