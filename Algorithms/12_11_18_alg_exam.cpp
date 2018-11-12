@@ -7,6 +7,8 @@ using namespace std;
 
 void space();
 long factorial(int n);
+void load_values(int *arr, int N);
+int sum_values(int *arr, int N);
 
 
 int main(void)
@@ -14,43 +16,16 @@ int main(void)
 	cout << "\t\tAlgorithms - 11/12/18" << endl;
 	cout << "\t\tAuthor: David Miko" << endl;
 	space();
-	cout << "Type a factorial: ";
-
-	string n;
-
-	getline(cin, n, '\n');
-
-	for (int i = 0; i < n.length(); i++)
-	{
-		int index = (int)n.at(i);
-
-		if ((index < 48 || index > 57))
-		{
-			if (index != 32)
-			{
-				cout << "Error." << endl;
-				system("pause");
-				return (-1);
-			}
-		}
-	}
-
-	stringstream ss(n);
-
-	int num;
-	ss >> num;
-
 	
+	int N = 2;
+	int *_arr = new int[N];
 
-	
+	load_values(_arr, N);
+	cout << "Sum of the array is: " << sum_values(_arr, N) << endl;
 
-	if (num > 30)
-	{
-		cout << "Factorial is too high." << endl;
-		return (-1);
-	}
+	delete[] _arr;
+	_arr = nullptr;
 
-	cout << "Factorial of " << num << " is: " << factorial(num) << endl;
 	system("pause");
 	return (0);
 }
@@ -70,6 +45,40 @@ long factorial(int n)
 
 
 	return (num);
+}
+
+void load_values(int *arr, int N)
+{
+	for (int i = 0; i < N; i++)
+	{
+		arr[i] = 100;
+	}
+}
+
+int sum_values(int *arr, int N)
+{
+	
+	if (N > 1)
+	{
+		return arr[N-1] + sum_values(arr, N - 1); // need to decrease N in the next function to move on to net element in the array
+	}
+	
+	return arr[0];
+
+
+}
+
+// default argument -> int i = 0
+int sum_values_dohnalek(int *arr, int N, int i = 0)
+{
+
+	if (i >= N)
+	{
+		return (0);
+	}
+
+	return arr[i] + sum_values_dohnalek(arr, N, i + 1);
+
 }
 
 void space()
