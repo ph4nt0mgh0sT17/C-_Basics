@@ -22,11 +22,11 @@ using namespace std;
 #pragma region Function headers 
 
 void space();
-void load_uniqueValues(int *arr, int N, int range);
-void print_arr(int *arr, int N);
-int* bubble_sort(int *arr, int N);
-int* bubble_sort_dohnalek(int *arr, int N);
-int* select_sort(int *arr, int N);
+void loadUniqueValues(int *arr, int N, int range);
+void printArray(int *arr, int N);
+int* bubbleSort(int *arr, int N);
+int* bubbleSortDohnalek(int *arr, int N);
+int* selectSort(int *arr, int N);
 int min(int *arr, int N, int index);
 
 #pragma endregion
@@ -40,28 +40,28 @@ int main(void)
 
 	int *p = new int[N];
 
-	load_uniqueValues(p, N, 100);
+	loadUniqueValues(p, N, 100);
 
 	cout << "Unsorted array:" << endl;
-	print_arr(p, N);
+	printArray(p, N);
 
 	cout << endl;
 	space();
 	
 	cout << "Sorted array - bubble sort:" << endl;
-	print_arr(bubble_sort(p, N), N);
+	printArray(bubbleSort(p, N), N);
 
 	cout << endl;
 	space();
 
 	cout << "Sorted array - bubble sort - do-while:" << endl;
-	print_arr(bubble_sort_dohnalek(p, N), N);
+	printArray(bubbleSortDohnalek(p, N), N);
 
 	cout << endl;
 	space();
 
 	cout << "Sorted array - selection sort:" << endl;
-	print_arr(select_sort(p,N), N);
+	printArray(selectSort(p,N), N);
 
 	delete[] p;
 	p = nullptr;
@@ -81,7 +81,7 @@ void space()
 /// <summary>Prints array</summary>
 /// <param name="arr">Current array to be searched through</param>
 /// <param name="N">Quantity of elements in the array</param>
-void print_arr(int *arr, int N)
+void printArray(int *arr, int N)
 {
 	for (int i = 0; i < N; i++)
 	{
@@ -93,7 +93,7 @@ void print_arr(int *arr, int N)
 /// <param name="arr">Current array to be searched through</param>
 /// <param name="N">Quantity of elements in the array</param>
 /// <param name="range">Range of random bounds</param>
-void load_uniqueValues(int *arr, int N, int range)
+void loadUniqueValues(int *arr, int N, int range)
 {
 	// unsigned int because of pedantic error -> this function 'time' expects unsigned int
 	srand(unsigned int(time(nullptr)));
@@ -108,7 +108,7 @@ void load_uniqueValues(int *arr, int N, int range)
 /// <param name="arr">Current array to be searched through</param>
 /// <param name="N">Quantity of elements in the array</param>
 /// <returns>Sorted array</returns>
-int* bubble_sort(int *arr, int N)
+int* bubbleSort(int *arr, int N)
 {
 	int* arr_sort = arr;
 
@@ -133,7 +133,7 @@ int* bubble_sort(int *arr, int N)
 /// <param name="arr">Current array to be searched through</param>
 /// <param name="N">Quantity of elements in the array</param>
 /// <returns>Sorted array</returns>
-int* bubble_sort_dohnalek(int *arr, int N)
+int* bubbleSortDohnalek(int *arr, int N)
 {
 	int* arr_sort = arr;
 
@@ -183,7 +183,7 @@ int min(int *arr, int N, int index = 0)
 /// <param name="arr">Current array to be searched through</param>
 /// <param name="N">Quantity of elements in the array</param>
 /// <returns>Sorted array</returns>
-int* select_sort(int *arr, int N)
+int* selectSort(int *arr, int N)
 {
 	// temporary array for sorting
 	int *arr_sort = arr;
