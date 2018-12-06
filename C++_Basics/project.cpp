@@ -1,7 +1,11 @@
+#pragma region Includes
+
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <Windows.h>
+
+#pragma endregion
 
 using namespace std;
 
@@ -9,17 +13,25 @@ using namespace std;
 #define WRONG_DATA 1
 #define IO_ERROR 2
 
+#pragma region Function headers
 
 void printTitle(string title);
 void printMenu(string menu);
 void chooseSelection(char choice);
 int verifyInput();
 
+#pragma endregion 
 
 
+/// <summary>
+/// Name of the application
+/// </summary>
 const string nameApp = "\t\tRezervace mistnosti\n"
 					"==========================================================\n\n";
 
+/// <summary>
+/// Menu of the application
+/// </summary>
 const string menu = "Menu:\n"
 					"\t1 - Vypsat vsechny mistnosti\n"
 					"\t2 - Vypsat nezarezervovane mistnosti\n"
@@ -54,6 +66,12 @@ int main(void)
 	return 0;
 }
 
+
+#pragma region Functions
+/// <summary>
+/// Prints the title of the app
+/// </summary>
+/// <param name="title">Text to be printed</param>
 void printTitle(string title)
 {
 	for (unsigned int i = 0; i < title.length(); i++)
@@ -63,6 +81,10 @@ void printTitle(string title)
 	}
 }
 
+/// <summary>
+/// Prints menu with delay
+/// </summary>
+/// <param name="menu">Text to be printed</param>
 void printMenu(string menu)
 {
 	for (unsigned int i = 0; i < menu.length(); i++)
@@ -72,27 +94,35 @@ void printMenu(string menu)
 	}
 }
 
-void chooseSelection(char choice)
+/// <summary>
+/// Deciding due to choice what to do
+/// </summary>
+/// <param name="choice">Choice according to menu numbers</param>
+void chooseSelection(int choice)
 {
 	switch (choice)
 	{
-		case '1':
+		case 1:
 			// TODO: Print all rooms from .csv file
 			break;
 
-		case '2':
+		case 2:
 			// TODO: Print all not booked rooms
 			break;
 
-		case '3':
+		case 3:
 			// TODO: Print all rooms by the price
 			break;
-		case '4':
+		case 4:
 			// TODO: Export rooms to HTML
 			break;
 	}
 }
 
+/// <summary>
+/// Returns input (choose from menu) as Integer and verifies it by it's in the range (1 - 5)
+/// </summary>
+/// <returns>Choice as selection</returns>
 int verifyInput()
 {
 	string input;
@@ -103,6 +133,7 @@ int verifyInput()
 	{
 		cout << "Musis zadat cislo v rozmezi od 1 - 5." << endl;
 	}
+
 	choice = stoi(input);
 
 	if (choice > 5 || choice < 1)
@@ -112,3 +143,5 @@ int verifyInput()
 
 	return choice;
 }
+
+#pragma endregion
