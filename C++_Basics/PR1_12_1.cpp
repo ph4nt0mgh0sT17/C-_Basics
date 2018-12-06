@@ -133,6 +133,11 @@ void checkCheapBooks(Book *books, int n)
 	cout << endl;
 }
 
+/// <summary>
+/// Prints all authors (unique -> if in the selection is 1 author stored more than once he is printed only once)
+/// </summary>
+/// <param name="books">All records</param>
+/// <param name="n">Number of records</param>
 void checkAuthors(Book *books, int n)
 {
 	bool authorDuplicate = false;
