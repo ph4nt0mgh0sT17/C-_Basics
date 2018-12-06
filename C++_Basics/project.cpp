@@ -13,27 +13,8 @@ using namespace std;
 void printTitle(string title);
 void printMenu(string menu);
 void chooseSelection(char choice);
-int verifyInput()
-{
-	string input;
-	int choice;
-	getline(cin, input);
+int verifyInput();
 
-
-
-	if (input.length() > 1)
-	{
-		cout << "Musis zadat cislo v rozmezi od 1 - 5." << endl;
-	}
-	choice = stoi(input);
-
-	if (choice > 5 || choice < 1)
-	{
-		cout << "Musis zadat cislo v rozmezi od 1 - 5." << endl;
-	}
-
-	return choice;
-}
 
 
 const string nameApp = "\t\tRezervace mistnosti\n"
@@ -110,4 +91,24 @@ void chooseSelection(char choice)
 			// TODO: Export rooms to HTML
 			break;
 	}
+}
+
+int verifyInput()
+{
+	string input;
+	int choice;
+	getline(cin, input);
+
+	if (input.length() > 1)
+	{
+		cout << "Musis zadat cislo v rozmezi od 1 - 5." << endl;
+	}
+	choice = stoi(input);
+
+	if (choice > 5 || choice < 1)
+	{
+		cout << "Musis zadat cislo v rozmezi od 1 - 5." << endl;
+	}
+
+	return choice;
 }
