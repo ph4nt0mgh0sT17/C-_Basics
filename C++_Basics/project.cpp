@@ -51,7 +51,7 @@ int main(void)
 	while (choice != 5)
 	{
 		ChooseSelection(choice);
-		PrintMenu(menu);
+		PrintMenu(MENU);
 
 		choice = VerifyInput();
 	}
