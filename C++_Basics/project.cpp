@@ -15,10 +15,10 @@ using namespace std;
 
 #pragma region Function headers
 
-void printTitle(string title);
-void printMenu(string menu);
-void chooseSelection(char choice);
-int verifyInput();
+void PrintTitle(string title);
+void PrintMenu(string menu);
+void ChooseSelection(char choice);
+int VerifyInput();
 
 #pragma endregion 
 
@@ -26,37 +26,37 @@ int verifyInput();
 /// <summary>
 /// Name of the application
 /// </summary>
-const string nameApp = "\t\tRezervace mistnosti\n"
+const string NAME_APP = "\t\tRezervace mistnosti\n"
 					"==========================================================\n\n";
 
 /// <summary>
 /// Menu of the application
 /// </summary>
-const string menu = "Menu:\n"
+const string MENU = "Menu:\n"
 					"\t1 - Vypsat vsechny mistnosti\n"
 					"\t2 - Vypsat nezarezervovane mistnosti\n"
 					"\t3 - Vyhledat mistnosti do urcite ceny:\n"
 					"\t4 - Export nezarezervovanych mistnosti do HTML\n"
 					"\t5 - Ukoncit program\n\n";
 
-const string end = "Konec programu.";
+const string END = "Konec programu.";
 
 int main(void)
 {
-	printTitle(nameApp);
-	printMenu(menu);
+	PrintTitle(NAME_APP);
+	PrintMenu(MENU);
 
-	int choice = verifyInput();
+	int choice = VerifyInput();
 
 	while (choice != 5)
 	{
-		chooseSelection(choice);
-		printMenu(menu);
+		ChooseSelection(choice);
+		PrintMenu(menu);
 
-		choice = verifyInput();
+		choice = VerifyInput();
 	}
 
-	cout << "Konec programu." << endl;
+	cout << END << endl;
 	
 
 #ifndef __PROGTEST__
@@ -72,7 +72,7 @@ int main(void)
 /// Prints the title of the app
 /// </summary>
 /// <param name="title">Text to be printed</param>
-void printTitle(string title)
+void PrintTitle(string title)
 {
 	for (unsigned int i = 0; i < title.length(); i++)
 	{
@@ -85,7 +85,7 @@ void printTitle(string title)
 /// Prints menu with delay
 /// </summary>
 /// <param name="menu">Text to be printed</param>
-void printMenu(string menu)
+void PrintMenu(string menu)
 {
 	for (unsigned int i = 0; i < menu.length(); i++)
 	{
@@ -98,7 +98,7 @@ void printMenu(string menu)
 /// Deciding due to choice what to do
 /// </summary>
 /// <param name="choice">Choice according to menu numbers</param>
-void chooseSelection(int choice)
+void ChooseSelection(int choice)
 {
 	switch (choice)
 	{
@@ -123,7 +123,7 @@ void chooseSelection(int choice)
 /// Returns input (choose from menu) as Integer and verifies it by it's in the range (1 - 5)
 /// </summary>
 /// <returns>Choice as selection</returns>
-int verifyInput()
+int VerifyInput()
 {
 	string input;
 	int choice;
