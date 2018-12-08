@@ -9,10 +9,14 @@
 
 using namespace std;
 
+#pragma region ERRROR DEFINITIONS
+
 #define CONVERT_ERROR -1
 #define OK 0
 #define WRONG_DATA 1
 #define IO_ERROR 2
+
+#pragma endregion
 
 #pragma region Function headers
 
@@ -20,27 +24,34 @@ void PrintTitle(string title);
 void PrintMenu(string menu);
 void ChooseSelection(int choice);
 int VerifyInput();
+bool isTextNumber(string text);
 
 #pragma endregion 
 
 
+#pragma region CONST_VARIABLES
+
 /// <summary>
 /// Name of the application
 /// </summary>
-const string NAME_APP = "\t\tRezervace mistnosti\n"
+const string NAME_APP = "\t\tBook reservation\n"
 					"==========================================================\n\n";
 
 /// <summary>
 /// Menu of the application
 /// </summary>
 const string MENU = "Menu:\n"
-					"\t1 - Vypsat vsechny mistnosti\n"
-					"\t2 - Vypsat mistnosti podle kriterii\n"
-					"\t3 - Zarezervovat mistnost\n"
-					"\t4 - Export mistnosti do HTML\n"
-					"\t5 - Ukoncit program\n\n";
+					"\t1 - Print all rooms.\n"
+					"\t2 - Print all rooms due to criteria\n"
+					"\t3 - Book a room\n"
+					"\t4 - Export rooms into HTML\n"
+					"\t5 - Exit application.\n\n";
 
 const string END = "Konec programu.";
+
+const int DELAY = 10;
+
+#pragma endregion
 
 int main(void)
 {
@@ -78,7 +89,7 @@ void PrintTitle(string title)
 	for (unsigned int i = 0; i < title.length(); i++)
 	{
 		cout << title.at(i);
-		Sleep(25);
+		Sleep(DELAY);
 	}
 }
 
@@ -91,7 +102,7 @@ void PrintMenu(string menu)
 	for (unsigned int i = 0; i < menu.length(); i++)
 	{
 		cout << menu.at(i);
-		Sleep(25);
+		Sleep(DELAY);
 	}
 }
 
@@ -130,7 +141,7 @@ int VerifyInput()
 	int choice;
 	getline(cin, input);
 
-	if (input.length() > 1)
+	if (isTextNumber(input) == false)
 	{
 		cout << "Musis zadat cislo v rozmezi od 1 - 5." << endl;
 		return CONVERT_ERROR;
@@ -155,6 +166,20 @@ int VerifyInput()
 	}
 
 	return choice;
+}
+
+bool isTextNumber(string text)
+{
+	for (unsigned int i = 0; i < text.length(); i++)
+	{
+		int charAscii = (int)text.at(i);
+		if ((charAscii < 48 || charAscii > 57) && charAscii != 32)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 #pragma endregion
