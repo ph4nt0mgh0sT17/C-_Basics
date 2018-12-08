@@ -9,6 +9,7 @@
 
 using namespace std;
 
+#define CONVERT_ERROR -1
 #define OK 0
 #define WRONG_DATA 1
 #define IO_ERROR 2
@@ -17,7 +18,7 @@ using namespace std;
 
 void PrintTitle(string title);
 void PrintMenu(string menu);
-void ChooseSelection(char choice);
+void ChooseSelection(int choice);
 int VerifyInput();
 
 #pragma endregion 
@@ -34,9 +35,9 @@ const string NAME_APP = "\t\tRezervace mistnosti\n"
 /// </summary>
 const string MENU = "Menu:\n"
 					"\t1 - Vypsat vsechny mistnosti\n"
-					"\t2 - Vypsat nezarezervovane mistnosti\n"
-					"\t3 - Vyhledat mistnosti do urcite ceny:\n"
-					"\t4 - Export nezarezervovanych mistnosti do HTML\n"
+					"\t2 - Vypsat mistnosti podle kriterii\n"
+					"\t3 - Zarezervovat mistnost\n"
+					"\t4 - Export mistnosti do HTML\n"
 					"\t5 - Ukoncit program\n\n";
 
 const string END = "Konec programu.";
@@ -132,9 +133,21 @@ int VerifyInput()
 	if (input.length() > 1)
 	{
 		cout << "Musis zadat cislo v rozmezi od 1 - 5." << endl;
+		return CONVERT_ERROR;
 	}
 
-	choice = stoi(input);
+	try
+	{
+		choice = stoi(input);
+	}
+
+	catch (const std::exception&)
+	{
+		cout << "Musis zadat cislo v rozmezi od 1 - 5." << endl;
+		return CONVERT_ERROR;
+	}
+
+	
 
 	if (choice > 5 || choice < 1)
 	{
