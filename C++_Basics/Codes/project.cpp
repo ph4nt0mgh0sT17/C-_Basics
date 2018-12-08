@@ -19,21 +19,6 @@ using namespace std;
 
 #pragma endregion
 
-
-
-#pragma region Function headers
-
-void PrintTitle(string title);
-void PrintMenu(string menu);
-void ChooseSelection(int choice);
-int VerifyInput();
-bool IsTextValid(string text);
-string *GetRoomData(string roomData);
-Room LoadRoom(string *data);
-bool PrintAllRooms(string filename);
-
-#pragma endregion 
-
 #pragma region Structs
 
 struct Room
@@ -46,6 +31,23 @@ struct Room
 };
 
 #pragma endregion
+
+
+#pragma region Function headers
+
+void PrintTitle(string title);
+void PrintMenu(string menu);
+void ChooseSelection(int choice);
+int VerifyInput();
+bool IsTextValid(string text);
+string *GetRoomData(string roomData);
+Room LoadRoom(string *data);
+Room *Load(Room *rooms, int n, Room room);
+bool PrintAllRooms(string filename);
+
+#pragma endregion 
+
+
 
 
 #pragma region CONST_VARIABLES
@@ -246,11 +248,15 @@ string *GetRoomData(string roomData)
 			continue;
 		}
 
-		else
+		if (currentChar != ';')
 		{
 			current_element += currentChar;
 		}
 	}
+
+	data[current_index] = current_element;
+
+	
 
 	return data;
 	
@@ -270,8 +276,24 @@ Room LoadRoom(string *data)
 
 }
 
+Room *Load(Room *rooms, int n, Room room)
+{
+	Room *newRooms = new Room[n + 1];
+
+	for (int i = 0; i < n; i++)
+	{
+		newRooms[i] = rooms[i];
+	}
+	delete[] rooms;
+	rooms = nullptr;
+
+	return newRooms;
+}
+
 bool PrintAllRooms(string filename)
 {
+	int n = 1;
+	Room *roomsArray = new Room[1];
 	string line;
 	ifstream rooms(filename);
 	
@@ -285,9 +307,13 @@ bool PrintAllRooms(string filename)
 	while (rooms.good())
 	{
 		getline(rooms, line);
+		string *data = GetRoomData(line);
+		Room currentRoom = LoadRoom(data);
+		roomsArray = Load(roomsArray, n, currentRoom);
 		
 	}
 	
+	cout << roomsArray[0].RoomNumber << endl;
 
 	rooms.close();
 
