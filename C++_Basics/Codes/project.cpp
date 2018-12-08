@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <Windows.h>
+#include <fstream>
 
 #pragma endregion
 
@@ -18,6 +19,8 @@ using namespace std;
 
 #pragma endregion
 
+
+
 #pragma region Function headers
 
 void PrintTitle(string title);
@@ -25,8 +28,24 @@ void PrintMenu(string menu);
 void ChooseSelection(int choice);
 int VerifyInput();
 bool IsTextValid(string text);
+string *GetRoomData(string roomData);
+Room LoadRoom(string *data);
+bool PrintAllRooms(string filename);
 
 #pragma endregion 
+
+#pragma region Structs
+
+struct Room
+{
+	int Id;
+	int Floor;
+	int RoomNumber;
+	int CapacitySeats;
+	int Price;
+};
+
+#pragma endregion
 
 
 #pragma region CONST_VARIABLES
@@ -49,6 +68,8 @@ const string MENU = "Menu:\n"
 
 const string END = "Konec programu.";
 
+const string FILENAME = "rooms.csv";
+
 const int DELAY = 10;
 
 #pragma endregion
@@ -63,6 +84,8 @@ int main(void)
 	while (choice != 5)
 	{
 		ChooseSelection(choice);
+		system("pause");
+		return 0;
 		PrintMenu(MENU);
 
 		choice = VerifyInput();
@@ -115,7 +138,7 @@ void ChooseSelection(int choice)
 	switch (choice)
 	{
 		case 1:
-			// TODO: Print all rooms from .csv file
+			PrintAllRooms(FILENAME);
 			break;
 
 		case 2:
@@ -199,6 +222,74 @@ bool IsTextValid(string text)
 			start_number = false;
 		}
 	}
+
+	return true;
+}
+
+string *GetRoomData(string roomData)
+{
+	string *data = new string[5];
+	string current_element = "";
+
+	int current_index = 0;
+
+	for (unsigned int i = 0; i < roomData.length(); i++)
+	{
+		char currentChar = roomData.at(i);
+
+		if (currentChar == ';')
+		{
+			data[current_index] = current_element;
+			current_element = "";
+			current_index++;
+
+			continue;
+		}
+
+		else
+		{
+			current_element += currentChar;
+		}
+	}
+
+	return data;
+	
+}
+
+Room LoadRoom(string *data)
+{
+	Room room;
+
+	room.Id = stoi(data[0]);
+	room.Floor = stoi(data[1]);
+	room.RoomNumber = stoi(data[2]);
+	room.CapacitySeats = stoi(data[3]);
+	room.Price = stoi(data[4]);
+
+	return room;
+
+}
+
+bool PrintAllRooms(string filename)
+{
+	string line;
+	ifstream rooms(filename);
+	
+	if (!rooms.is_open())
+	{
+		return false;
+	}
+
+	getline(rooms, line);
+
+	while (rooms.good())
+	{
+		getline(rooms, line);
+		
+	}
+	
+
+	rooms.close();
 
 	return true;
 }
