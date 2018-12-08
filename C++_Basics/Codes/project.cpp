@@ -43,7 +43,7 @@ const string NAME_APP = "\t\tBook reservation\n"
 const string MENU = "Menu:\n"
 					"\t1 - Print all rooms.\n"
 					"\t2 - Print all rooms due to criteria\n"
-					"\t3 - Book a room\n"
+					"\t3 - Book a room\n" 
 					"\t4 - Export rooms into HTML\n"
 					"\t5 - Exit application.\n\n";
 
