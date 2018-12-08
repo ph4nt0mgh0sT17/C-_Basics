@@ -24,7 +24,7 @@ void PrintTitle(string title);
 void PrintMenu(string menu);
 void ChooseSelection(int choice);
 int VerifyInput();
-bool isTextNumber(string text);
+bool IsTextValid(string text);
 
 #pragma endregion 
 
@@ -141,7 +141,7 @@ int VerifyInput()
 	int choice;
 	getline(cin, input);
 
-	if (isTextNumber(input) == false)
+	if (IsTextValid(input) == false)
 	{
 		cout << "Musis zadat cislo v rozmezi od 1 - 5." << endl;
 		return CONVERT_ERROR;
@@ -168,14 +168,35 @@ int VerifyInput()
 	return choice;
 }
 
-bool isTextNumber(string text)
+bool IsTextValid(string text)
 {
+	bool start_number = false; 
+	bool end_number = false;
 	for (unsigned int i = 0; i < text.length(); i++)
 	{
 		int charAscii = (int)text.at(i);
 		if ((charAscii < 48 || charAscii > 57) && charAscii != 32)
 		{
 			return false;
+		}
+
+		if ((charAscii >= 48 || charAscii <= 57))
+		{
+			if (!start_number)
+			{
+				start_number = true;
+			}
+
+			if (end_number)
+			{
+				return false;
+			}
+		}
+
+		if (charAscii == 32 && start_number)
+		{
+			end_number = true;
+			start_number = false;
 		}
 	}
 
