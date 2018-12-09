@@ -35,15 +35,17 @@ struct Room
 
 #pragma region Function headers
 
-void PrintTitle(string title);
-void PrintMenu(string menu);
-void ChooseSelection(int choice);
-int VerifyInput();
+void PrintTitle();
+void PrintMenu();
+void PrintCriteria();
+void ChooseMenu(int choice);
+int VerifyInput(int peak);
 bool IsTextValid(string text);
 string *GetRoomData(string roomData);
 Room LoadRoom(string *data);
 Room *Load(Room *rooms, int &n, Room room);
 bool PrintAllRooms(string filename);
+void PrintMenuCriteria(string criteria);
 
 #pragma endregion 
 
@@ -66,9 +68,14 @@ const string MENU = "Menu:\n"
 					"\t2 - Print all rooms due to criteria\n"
 					"\t3 - Book a room\n" 
 					"\t4 - Export rooms into HTML\n"
-					"\t5 - Exit application.\n\n";
+					"\t5 - Exit application\n\n";
 
-const string END = "Konec programu.";
+const string CRITERIA = "\t1 - Print due to price\n"
+						"\t2 - Print due to date\n"
+						"\t3 - Print due to seats\n"
+						"\t4 - Cancel choice\n\n";
+
+const string END = "Exit of the application.";
 
 const string FILENAME = "rooms.csv";
 
@@ -78,17 +85,17 @@ const int DELAY = 10;
 
 int main(void)
 {
-	PrintTitle(NAME_APP);
-	PrintMenu(MENU);
+	PrintTitle();
+	PrintMenu();
 
-	int choice = VerifyInput();
+	int choice = VerifyInput(5);
 
 	while (choice != 5)
 	{
-		ChooseSelection(choice);
-		PrintMenu(MENU);
+		ChooseMenu(choice);
+		PrintMenu();
 
-		choice = VerifyInput();
+		choice = VerifyInput(5);
 	}
 
 	cout << END << endl;
@@ -117,25 +124,34 @@ void PrintDelay(string text)
 /// Prints the title of the app
 /// </summary>
 /// <param name="title">Text to be printed</param>
-void PrintTitle(string title)
+void PrintTitle()
 {
-	PrintDelay(title);
+	PrintDelay(NAME_APP);
 }
 
 /// <summary>
 /// Prints menu with delay
 /// </summary>
 /// <param name="menu">Text to be printed</param>
-void PrintMenu(string menu)
+void PrintMenu()
 {
-	PrintDelay(menu);
+	PrintDelay(MENU);
+}
+
+/// <summary>
+/// Prints menu with delay
+/// </summary>
+/// <param name="menu">Text to be printed</param>
+void PrintCriteria()
+{
+	PrintDelay(CRITERIA);
 }
 
 /// <summary>
 /// Deciding due to choice what to do
 /// </summary>
 /// <param name="choice">Choice according to menu numbers</param>
-void ChooseSelection(int choice)
+void ChooseMenu(int choice)
 {
 	switch (choice)
 	{
@@ -144,7 +160,7 @@ void ChooseSelection(int choice)
 			break;
 
 		case 2:
-			// TODO: Print all not booked rooms
+			PrintMenuCriteria(CRITERIA);
 			break;
 
 		case 3:
@@ -160,7 +176,7 @@ void ChooseSelection(int choice)
 /// Returns input (choose from menu) as Integer and verifies it by it's in the range (1 - 5)
 /// </summary>
 /// <returns>Choice as selection</returns>
-int VerifyInput()
+int VerifyInput(int peak)
 {
 	string input;
 	int choice;
@@ -168,7 +184,7 @@ int VerifyInput()
 
 	if (IsTextValid(input) == false)
 	{
-		cout << "Musis zadat cislo v rozmezi od 1 - 5." << endl;
+		cout << "You need to choose between 1 - " << peak << "." << endl;
 		return CONVERT_ERROR;
 	}
 
@@ -179,15 +195,15 @@ int VerifyInput()
 
 	catch (const std::exception&)
 	{
-		cout << "Musis zadat cislo v rozmezi od 1 - 5." << endl;
+		cout << "You need to choose between 1 - " << peak << "." << endl;
 		return CONVERT_ERROR;
 	}
 
 	
 
-	if (choice > 5 || choice < 1)
+	if (choice > peak || choice < 1)
 	{
-		cout << "Musis zadat cislo v rozmezi od 1 - 5." << endl;
+		cout << "You need to choose between 1 - " << peak << "." << endl;
 	}
 
 	return choice;
@@ -371,6 +387,46 @@ bool PrintAllRooms(string filename)
 	
 
 	return true;
+}
+
+/// <summary>
+/// Deciding due to choice what to do
+/// </summary>
+/// <param name="choice">Choice according to menu numbers</param>
+void ChooseCriteria(int choice)
+{
+	switch (choice)
+	{
+	case 1:
+		//
+		break;
+
+	case 2:
+		//
+		break;
+
+	case 3:
+		// TODO: Print all rooms by the price
+		break;
+	}
+}
+
+
+void PrintMenuCriteria(string criteria)
+{
+	PrintCriteria();
+
+	int choice = VerifyInput(4);
+
+	while (choice != 4)
+	{
+		ChooseCriteria(choice);
+		PrintCriteria();
+
+		choice = VerifyInput(4);
+	}
+
+	cout << endl << "Choice cancelled." << endl << endl;
 }
 
 #pragma endregion
