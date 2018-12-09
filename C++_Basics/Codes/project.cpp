@@ -256,7 +256,7 @@ string *GetRoomData(string roomData)
 	{
 		char currentChar = roomData.at(i);
 
-		if (currentChar == ';')
+		if (currentChar == ',')
 		{
 			data[current_index] = current_element;
 			current_element = "";
@@ -265,7 +265,7 @@ string *GetRoomData(string roomData)
 			continue;
 		}
 
-		if (currentChar != ';')
+		if (currentChar != ',')
 		{
 			current_element += currentChar;
 		}
@@ -324,7 +324,7 @@ void PrintRoom(Room room)
 {
 	string textToBePrinted = "Room: " + to_string(room.RoomNumber) + 
 		" located on " + to_string(room.Floor) + 
-		".floor has capacity of : " + to_string(room.CapacitySeats) + 
+		". floor has capacity of : " + to_string(room.CapacitySeats) + 
 		" seats. Costs : " + to_string(room.Price) + 
 		" CZK. Its ID is : " + to_string(room.Id) + "\n";
 
