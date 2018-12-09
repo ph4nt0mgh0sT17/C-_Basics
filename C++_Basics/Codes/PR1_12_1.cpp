@@ -15,7 +15,7 @@ struct Book
 	int id;
 };
 
-mstring *bookReport(string report);
+string *bookReport(string report);
 Book loadBook(string *reportBook);
 void checkNovels(Book *books, int n);
 void checkCheapBooks(Book *books, int n);

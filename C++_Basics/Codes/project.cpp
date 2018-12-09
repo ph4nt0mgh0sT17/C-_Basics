@@ -42,7 +42,7 @@ int VerifyInput();
 bool IsTextValid(string text);
 string *GetRoomData(string roomData);
 Room LoadRoom(string *data);
-Room *Load(Room *rooms, int n, Room room);
+Room *Load(Room *rooms, int &n, Room room);
 bool PrintAllRooms(string filename);
 
 #pragma endregion 
@@ -86,8 +86,6 @@ int main(void)
 	while (choice != 5)
 	{
 		ChooseSelection(choice);
-		system("pause");
-		return 0;
 		PrintMenu(MENU);
 
 		choice = VerifyInput();
@@ -105,17 +103,23 @@ int main(void)
 
 
 #pragma region Functions
+
+void PrintDelay(string text)
+{
+	for (unsigned int i = 0; i < text.length(); i++)
+	{
+		cout << text.at(i);
+		Sleep(DELAY);
+	}
+}
+
 /// <summary>
 /// Prints the title of the app
 /// </summary>
 /// <param name="title">Text to be printed</param>
 void PrintTitle(string title)
 {
-	for (unsigned int i = 0; i < title.length(); i++)
-	{
-		cout << title.at(i);
-		Sleep(DELAY);
-	}
+	PrintDelay(title);
 }
 
 /// <summary>
@@ -124,11 +128,7 @@ void PrintTitle(string title)
 /// <param name="menu">Text to be printed</param>
 void PrintMenu(string menu)
 {
-	for (unsigned int i = 0; i < menu.length(); i++)
-	{
-		cout << menu.at(i);
-		Sleep(DELAY);
-	}
+	PrintDelay(menu);
 }
 
 /// <summary>
@@ -231,6 +231,7 @@ bool IsTextValid(string text)
 string *GetRoomData(string roomData)
 {
 	string *data = new string[5];
+	int *cislo = new int[45];
 	string current_element = "";
 
 	int current_index = 0;
@@ -253,9 +254,8 @@ string *GetRoomData(string roomData)
 			current_element += currentChar;
 		}
 	}
-
+	
 	data[current_index] = current_element;
-
 	
 
 	return data;
@@ -276,30 +276,65 @@ Room LoadRoom(string *data)
 
 }
 
-Room *Load(Room *rooms, int n, Room room)
+Room *Load(Room *rooms, int &n, Room room)
 {
 	Room *newRooms = new Room[n + 1];
+
+	if (n == 0)
+	{
+		newRooms[0] = room;
+		n++;
+		delete[] rooms;
+		rooms = nullptr;
+
+		return newRooms;
+
+	}
 
 	for (int i = 0; i < n; i++)
 	{
 		newRooms[i] = rooms[i];
 	}
+	newRooms[n] = room;
+
+	n++;
 	delete[] rooms;
 	rooms = nullptr;
 
 	return newRooms;
 }
 
-bool PrintAllRooms(string filename)
+void PrintRoom(Room room)
 {
-	int n = 1;
+	string textToBePrinted = "Room: " + to_string(room.RoomNumber) + 
+		" located on " + to_string(room.Floor) + 
+		".floor has capacity of : " + to_string(room.CapacitySeats) + 
+		" seats. Costs : " + to_string(room.Price) + 
+		" CZK. Its ID is : " + to_string(room.Id) + "\n";
+
+    PrintDelay(textToBePrinted);
+}
+
+void PrintRooms(Room *rooms, int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		PrintRoom(rooms[i]);
+	}
+
+	cout << endl;
+}
+
+Room *GetAllRooms(string filename, int &n)
+{
+	n = 0;
 	Room *roomsArray = new Room[1];
 	string line;
 	ifstream rooms(filename);
-	
+
 	if (!rooms.is_open())
 	{
-		return false;
+		return NULL;
 	}
 
 	getline(rooms, line);
@@ -307,15 +342,33 @@ bool PrintAllRooms(string filename)
 	while (rooms.good())
 	{
 		getline(rooms, line);
-		string *data = GetRoomData(line);
-		Room currentRoom = LoadRoom(data);
-		roomsArray = Load(roomsArray, n, currentRoom);
-		
+
+		if (line != "")
+		{
+			string *data = GetRoomData(line);
+			Room currentRoom = LoadRoom(data);
+			roomsArray = Load(roomsArray, n, currentRoom);
+		}
+
 	}
-	
-	cout << roomsArray[0].RoomNumber << endl;
 
 	rooms.close();
+
+	return roomsArray;
+}
+
+bool PrintAllRooms(string filename)
+{
+	int n = 0;
+
+	Room *rooms = GetAllRooms(filename, n);
+	
+	PrintRooms(rooms, n);
+
+	delete[] rooms;
+	rooms = nullptr;
+
+	
 
 	return true;
 }
