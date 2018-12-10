@@ -40,12 +40,15 @@ void PrintMenu();
 void PrintCriteria();
 void ChooseMenu(int choice);
 int VerifyInput(int peak);
+int VerifyInput();
 bool IsTextValid(string text);
 string *GetRoomData(string roomData);
 Room LoadRoom(string *data);
 Room *Load(Room *rooms, int &n, Room room);
-bool PrintAllRooms(string filename);
+bool PrintAllRooms();
 void PrintMenuCriteria(string criteria);
+void PrintRoomsByPrice(int price);
+void SelectPrice();
 
 #pragma endregion 
 
@@ -64,16 +67,17 @@ const string NAME_APP = "\t\tBook reservation\n"
 /// Menu of the application
 /// </summary>
 const string MENU = "Menu:\n"
-					"\t1 - Print all rooms.\n"
-					"\t2 - Print all rooms due to criteria\n"
-					"\t3 - Book a room\n" 
-					"\t4 - Export rooms into HTML\n"
-					"\t5 - Exit application\n\n";
+						"\t1 - Print all rooms.\n"
+						"\t2 - Print all rooms due to criteria\n"
+						"\t3 - Book a room\n" 
+						"\t4 - Export rooms into HTML\n"
+						"\t5 - Exit application\n\n";
 
-const string CRITERIA = "\t1 - Print due to price\n"
-						"\t2 - Print due to date\n"
-						"\t3 - Print due to seats\n"
-						"\t4 - Cancel choice\n\n";
+const string CRITERIA = "Criteria:\n"
+							"\t1 - Print due to price\n"
+							"\t2 - Print due to date\n"
+							"\t3 - Print due to seats\n"
+							"\t4 - Cancel choice\n\n";
 
 const string END = "Exit of the application.";
 
@@ -99,7 +103,6 @@ int main(void)
 	}
 
 	cout << END << endl;
-	
 
 #ifndef __PROGTEST__
 	system("pause");
@@ -110,6 +113,7 @@ int main(void)
 
 
 #pragma region Functions
+
 
 void PrintDelay(string text)
 {
@@ -156,7 +160,7 @@ void ChooseMenu(int choice)
 	switch (choice)
 	{
 		case 1:
-			PrintAllRooms(FILENAME);
+			PrintAllRooms();
 			break;
 
 		case 2:
@@ -204,6 +208,32 @@ int VerifyInput(int peak)
 	if (choice > peak || choice < 1)
 	{
 		cout << "You need to choose between 1 - " << peak << "." << endl;
+	}
+
+	return choice;
+}
+
+int VerifyInput()
+{
+	string input;
+	int choice;
+	getline(cin, input);
+
+	if (IsTextValid(input) == false)
+	{
+		cout << "It needs to be a number." << endl;
+		return CONVERT_ERROR;
+	}
+
+	try
+	{
+		choice = stoi(input);
+	}
+
+	catch (const std::exception&)
+	{
+		cout << "It needs to be a number." << endl;
+		return CONVERT_ERROR;
 	}
 
 	return choice;
@@ -373,11 +403,11 @@ Room *GetAllRooms(string filename, int &n)
 	return roomsArray;
 }
 
-bool PrintAllRooms(string filename)
+bool PrintAllRooms()
 {
 	int n = 0;
 
-	Room *rooms = GetAllRooms(filename, n);
+	Room *rooms = GetAllRooms(FILENAME, n);
 	
 	PrintRooms(rooms, n);
 
@@ -392,25 +422,84 @@ bool PrintAllRooms(string filename)
 /// <summary>
 /// Deciding due to choice what to do
 /// </summary>
-/// <param name="choice">Choice according to menu numbers</param>
+/// <param name="choice">Choice according to criteria numbers</param>
 void ChooseCriteria(int choice)
 {
 	switch (choice)
 	{
-	case 1:
-		//
-		break;
+		case 1:
+			SelectPrice();
+			break;
 
-	case 2:
-		//
-		break;
+		case 2:
+			//
+			break;
 
-	case 3:
-		// TODO: Print all rooms by the price
-		break;
+		case 3:
+			// TODO: Print all rooms by the price
+			break;
 	}
 }
 
+bool GetRoomsByPrice(Room *&rooms, int &n, int price)
+{
+	int index = 0;
+	Room *roomsPrice = new Room[1];
+	bool roomFound = false;
+	for (int i = 0; i < n; i++)
+	{
+		if (rooms[i].Price <= price)
+		{
+			roomsPrice = Load(roomsPrice, index, rooms[i]);
+			roomFound = true;
+		}
+	}
+
+	if (roomFound)
+	{
+		delete[] rooms;
+		rooms = nullptr;
+
+		n = index;
+		rooms = roomsPrice;
+	}
+
+	else
+	{
+		delete[] roomsPrice;
+		roomsPrice = nullptr;
+
+		delete[] rooms;
+		rooms = nullptr;
+	}
+
+	return roomFound;
+}
+
+void PrintRoomsByPrice(int price)
+{
+	int n = 0;
+	Room *rooms = GetAllRooms(FILENAME, n);
+	
+	if (GetRoomsByPrice(rooms, n, price))
+	{
+		PrintRooms(rooms, n);
+	}
+
+	else
+	{
+		cout << "No room was found." << endl;
+	}
+}
+
+void SelectPrice()
+{
+	cout << "Choose a price: ";
+
+	int price = VerifyInput();
+
+	PrintRoomsByPrice(price);
+}
 
 void PrintMenuCriteria(string criteria)
 {
@@ -422,7 +511,6 @@ void PrintMenuCriteria(string criteria)
 	{
 		ChooseCriteria(choice);
 		PrintCriteria();
-
 		choice = VerifyInput(4);
 	}
 
