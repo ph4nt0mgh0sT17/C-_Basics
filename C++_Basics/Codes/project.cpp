@@ -248,6 +248,20 @@ int VerifyInput()
 	return choice;
 }
 
+int *VerifyDate(string date)
+{
+	//string *dates
+	bool startedNumber = false;
+
+	for (unsigned int i = 0; i < date.length(); i++)
+	{
+		if (((int)date.at(i) < 48 || (int)date.at(i) > 57))
+		{
+
+		}
+	}
+}
+
 /// <summary>
 /// Checks if given text is valid -> if it's number
 /// </summary>
@@ -487,6 +501,8 @@ void ChooseCriteria(int choice)
 	}
 }
 
+#pragma region Rooms by price
+
 /// <summary>
 /// Get all rooms by the given price
 /// </summary>
@@ -537,7 +553,7 @@ void PrintRoomsByPrice(int price)
 {
 	int n = 0;
 	Room *rooms = GetAllRooms(n);
-	
+
 	if (GetRoomsByPrice(rooms, n, price))
 	{
 		PrintRooms(rooms, n);
@@ -560,6 +576,29 @@ void SelectPrice()
 
 	PrintRoomsByPrice(price);
 }
+
+
+#pragma endregion
+
+#pragma region Rooms by date
+
+void PrintRoomsByDate(string date)
+{
+
+}
+
+void SelectPrice()
+{
+	cout << "Select a date (dd.mm.yyyy): ";
+
+	int price = VerifyInput();
+
+	PrintRoomsByPrice(price);
+}
+
+#pragma endregion
+
+
 
 /// <summary>
 /// Prints criteria into console
