@@ -41,12 +41,12 @@ void PrintCriteria();
 void ChooseMenu(int choice);
 int VerifyInput(int peak);
 int VerifyInput();
-bool IsTextValid(string text);
+bool IsNumberValid(string number);
 string *GetRoomData(string roomData);
 Room LoadRoom(string *data);
 Room *Load(Room *rooms, int &n, Room room);
 bool PrintAllRooms();
-void PrintMenuCriteria(string criteria);
+void PrintMenuCriteria();
 void PrintRoomsByPrice(int price);
 void SelectPrice();
 
@@ -83,6 +83,8 @@ const string END = "Exit of the application.";
 
 const string FILENAME = "rooms.csv";
 
+const string NO_ROOM_FOUND = "No room found.";
+
 const int DELAY = 10;
 
 #pragma endregion
@@ -114,7 +116,10 @@ int main(void)
 
 #pragma region Functions
 
-
+/// <summary>
+/// Prints given text in delays. Just visual feature.
+/// </summary>
+/// <param name="text">Text to be printed</param>
 void PrintDelay(string text)
 {
 	for (unsigned int i = 0; i < text.length(); i++)
@@ -164,7 +169,7 @@ void ChooseMenu(int choice)
 			break;
 
 		case 2:
-			PrintMenuCriteria(CRITERIA);
+			PrintMenuCriteria();
 			break;
 
 		case 3:
@@ -186,7 +191,7 @@ int VerifyInput(int peak)
 	int choice;
 	getline(cin, input);
 
-	if (IsTextValid(input) == false)
+	if (IsNumberValid(input) == false)
 	{
 		cout << "You need to choose between 1 - " << peak << "." << endl;
 		return CONVERT_ERROR;
@@ -213,13 +218,17 @@ int VerifyInput(int peak)
 	return choice;
 }
 
+/// <summary>
+/// Verifies input if it's number...
+/// </summary>
+/// <returns>Input number</returns>
 int VerifyInput()
 {
 	string input;
 	int choice;
 	getline(cin, input);
 
-	if (IsTextValid(input) == false)
+	if (IsNumberValid(input) == false)
 	{
 		cout << "It needs to be a number." << endl;
 		return CONVERT_ERROR;
@@ -239,13 +248,18 @@ int VerifyInput()
 	return choice;
 }
 
-bool IsTextValid(string text)
+/// <summary>
+/// Checks if given text is valid -> if it's number
+/// </summary>
+/// <param name="text">Given number</param>
+/// <returns>True of false</returns>
+bool IsNumberValid(string number)
 {
 	bool start_number = false; 
 	bool end_number = false;
-	for (unsigned int i = 0; i < text.length(); i++)
+	for (unsigned int i = 0; i < number.length(); i++)
 	{
-		int charAscii = (int)text.at(i);
+		int charAscii = (int)number.at(i);
 		if ((charAscii < 48 || charAscii > 57) && charAscii != 32)
 		{
 			return false;
@@ -274,6 +288,11 @@ bool IsTextValid(string text)
 	return true;
 }
 
+/// <summary>
+/// Splits Room data into array due to commas in .csv file
+/// </summary>
+/// <param name="roomData">Data obtained from .csv file</param>
+/// <returns>string array</returns>
 string *GetRoomData(string roomData)
 {
 	string *data = new string[5];
@@ -307,7 +326,11 @@ string *GetRoomData(string roomData)
 	return data;
 	
 }
-
+/// <summary>
+/// Gets from data array information into Room struct
+/// </summary>
+/// <param name="data">Array data about given Room</param>
+/// <returns>Room</returns>
 Room LoadRoom(string *data)
 {
 	Room room;
@@ -322,6 +345,13 @@ Room LoadRoom(string *data)
 
 }
 
+/// <summary>
+/// Expands room array of 1 element -> function for loading given room into given array of rooms
+/// </summary>
+/// <param name="rooms">Given array of rooms</param>
+/// <param name="n">Given length of the array - must be defined before calling this function -> n is incrementing</param>
+/// <param name="room">Room to be added to array</param>
+/// <returns>Array</returns>
 Room *Load(Room *rooms, int &n, Room room)
 {
 	Room *newRooms = new Room[n + 1];
@@ -350,6 +380,10 @@ Room *Load(Room *rooms, int &n, Room room)
 	return newRooms;
 }
 
+/// <summary>
+/// Print current room
+/// </summary>
+/// <param name="room">Current room</param>
 void PrintRoom(Room room)
 {
 	string textToBePrinted = "Room: " + to_string(room.RoomNumber) + 
@@ -361,6 +395,11 @@ void PrintRoom(Room room)
     PrintDelay(textToBePrinted);
 }
 
+/// <summary>
+/// Print all rooms of the rooms array
+/// </summary>
+/// <param name="rooms">Given array</param>
+/// <param name="n">Length of the array</param>
 void PrintRooms(Room *rooms, int n)
 {
 	for (int i = 0; i < n; i++)
@@ -371,12 +410,17 @@ void PrintRooms(Room *rooms, int n)
 	cout << endl;
 }
 
-Room *GetAllRooms(string filename, int &n)
+/// <summary>
+/// Get all rooms into Room array
+/// </summary>
+/// <param name="n">Length of the array, not known at the end of the function is known</param>
+/// <returns></returns>
+Room *GetAllRooms(int &n)
 {
 	n = 0;
 	Room *roomsArray = new Room[1];
 	string line;
-	ifstream rooms(filename);
+	ifstream rooms(FILENAME);
 
 	if (!rooms.is_open())
 	{
@@ -403,18 +447,20 @@ Room *GetAllRooms(string filename, int &n)
 	return roomsArray;
 }
 
+/// <summary>
+/// Print all rooms from the .csv file
+/// </summary>
+/// <returns></returns>
 bool PrintAllRooms()
 {
 	int n = 0;
 
-	Room *rooms = GetAllRooms(FILENAME, n);
+	Room *rooms = GetAllRooms(n);
 	
 	PrintRooms(rooms, n);
 
 	delete[] rooms;
 	rooms = nullptr;
-
-	
 
 	return true;
 }
@@ -441,6 +487,13 @@ void ChooseCriteria(int choice)
 	}
 }
 
+/// <summary>
+/// Get all rooms by the given price
+/// </summary>
+/// <param name="rooms">Array which is during this function changed</param>
+/// <param name="n">Length of the array</param>
+/// <param name="price">Maximal price which can be allowed</param>
+/// <returns>If any room was found</returns>
 bool GetRoomsByPrice(Room *&rooms, int &n, int price)
 {
 	int index = 0;
@@ -476,10 +529,14 @@ bool GetRoomsByPrice(Room *&rooms, int &n, int price)
 	return roomFound;
 }
 
+/// <summary>
+/// Prints all rooms that was found. (If they were found)
+/// </summary>
+/// <param name="price">Maximal price of the room</param>
 void PrintRoomsByPrice(int price)
 {
 	int n = 0;
-	Room *rooms = GetAllRooms(FILENAME, n);
+	Room *rooms = GetAllRooms(n);
 	
 	if (GetRoomsByPrice(rooms, n, price))
 	{
@@ -488,10 +545,13 @@ void PrintRoomsByPrice(int price)
 
 	else
 	{
-		cout << "No room was found." << endl;
+		cout << NO_ROOM_FOUND << endl;
 	}
 }
 
+/// <summary>
+/// Choosing price by the user
+/// </summary>
 void SelectPrice()
 {
 	cout << "Choose a price: ";
@@ -501,7 +561,10 @@ void SelectPrice()
 	PrintRoomsByPrice(price);
 }
 
-void PrintMenuCriteria(string criteria)
+/// <summary>
+/// Prints criteria into console
+/// </summary>
+void PrintMenuCriteria()
 {
 	PrintCriteria();
 
