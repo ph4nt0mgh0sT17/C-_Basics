@@ -42,7 +42,7 @@ void ChooseMenu(int choice);
 int VerifyInput(int peak);
 int VerifyInput();
 bool IsNumberValid(string number);
-string *GetRoomData(string roomData);
+string *GetRoomData(string roomData, int n);
 Room LoadRoom(string *data);
 Room *Load(Room *rooms, int &n, Room room);
 bool PrintAllRooms();
@@ -81,7 +81,9 @@ const string CRITERIA = "Criteria:\n"
 
 const string END = "Exit of the application.";
 
-const string FILENAME = "rooms.csv";
+const string FILENAME_MAIN = "rooms.csv";
+
+const string FILENAME_DATE = "dates.csv";
 
 const string NO_ROOM_FOUND = "No room found.";
 
@@ -260,6 +262,7 @@ int *VerifyDate(string date)
 
 		}
 	}
+	return 0;
 }
 
 /// <summary>
@@ -307,9 +310,9 @@ bool IsNumberValid(string number)
 /// </summary>
 /// <param name="roomData">Data obtained from .csv file</param>
 /// <returns>string array</returns>
-string *GetRoomData(string roomData)
+string *GetRoomData(string roomData, int n)
 {
-	string *data = new string[5];
+	string *data = new string[n];
 	int *cislo = new int[45];
 	string current_element = "";
 
@@ -406,7 +409,8 @@ void PrintRoom(Room room)
 		" seats. Costs : " + to_string(room.Price) + 
 		" CZK. Its ID is : " + to_string(room.Id) + "\n";
 
-    PrintDelay(textToBePrinted);
+    cout << textToBePrinted;
+	Sleep(40);
 }
 
 /// <summary>
@@ -434,7 +438,7 @@ Room *GetAllRooms(int &n)
 	n = 0;
 	Room *roomsArray = new Room[1];
 	string line;
-	ifstream rooms(FILENAME);
+	ifstream rooms(FILENAME_MAIN);
 
 	if (!rooms.is_open())
 	{
@@ -449,7 +453,7 @@ Room *GetAllRooms(int &n)
 
 		if (line != "")
 		{
-			string *data = GetRoomData(line);
+			string *data = GetRoomData(line, 6);
 			Room currentRoom = LoadRoom(data);
 			roomsArray = Load(roomsArray, n, currentRoom);
 		}
@@ -457,6 +461,24 @@ Room *GetAllRooms(int &n)
 	}
 
 	rooms.close();
+
+	/*rooms.open(FILENAME_DATE);
+
+	if (!rooms.is_open())
+	{
+		return NULL;
+	}
+
+	getline(rooms, line);
+
+	while (rooms.good())
+	{
+		getline(rooms, line);
+		if (line != "")
+		{
+			
+		}
+	}*/
 
 	return roomsArray;
 }
@@ -587,7 +609,7 @@ void PrintRoomsByDate(string date)
 
 }
 
-void SelectPrice()
+void SelectDate()
 {
 	cout << "Select a date (dd.mm.yyyy): ";
 
