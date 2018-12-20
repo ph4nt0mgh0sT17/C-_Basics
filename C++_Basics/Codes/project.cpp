@@ -84,6 +84,7 @@ void PrintMenuCriteria();
 void PrintRoomsByPrice(int price);
 void SelectPrice();
 void SelectDate();
+void SelectSeats();
 
 #pragma endregion 
 
@@ -571,7 +572,7 @@ void ChooseCriteria(int choice)
 			break;
 
 		case 3:
-			// TODO: Print all rooms by the price
+			SelectSeats();
 			break;
 	}
 }
@@ -916,6 +917,103 @@ void SelectDate()
 
 #pragma endregion
 
+#pragma region Rooms by seats
+
+/// <summary>
+/// Get all rooms by the given price
+/// </summary>
+/// <param name="rooms">Array which is during this function changed</param>
+/// <param name="n">Length of the array</param>
+/// <param name="price">Maximal price which can be allowed</param>
+/// <returns>If any room was found</returns>
+bool GetRoomsBySeats(Room *&rooms, int &n, int seats)
+{
+	int index = 0;
+	Room *roomsPrice = new Room[1];
+	bool roomFound = false;
+	for (int i = 0; i < n; i++)
+	{
+		if (rooms[i].CapacitySeats <= seats)
+		{
+			roomsPrice = Load(roomsPrice, index, rooms[i]);
+			roomFound = true;
+		}
+	}
+
+	// Sort rooms array - BubbleSort
+	bool exchangeDone = false;
+
+	do
+	{
+		exchangeDone = false;
+
+		for (int i = 0; i < index - 1; i++)
+		{
+			if (roomsPrice[i].CapacitySeats > roomsPrice[i + 1].CapacitySeats)
+			{
+				swap(roomsPrice[i], roomsPrice[i + 1]);
+				exchangeDone = true;
+			}
+		}
+	} while (exchangeDone);
+
+	if (roomFound)
+	{
+		delete[] rooms;
+		rooms = nullptr;
+
+		n = index;
+		rooms = roomsPrice;
+	}
+
+	else
+	{
+		delete[] roomsPrice;
+		roomsPrice = nullptr;
+
+		delete[] rooms;
+		rooms = nullptr;
+	}
+
+
+
+	return roomFound;
+}
+
+/// <summary>
+/// Prints all rooms that was found. (If they were found)
+/// </summary>
+/// <param name="price">Maximal price of the room</param>
+void PrintRoomsBySeats(int seats)
+{
+	int n = 0;
+	Room *rooms = GetAllRooms(n);
+
+	if (GetRoomsBySeats(rooms, n, seats))
+	{
+		PrintRooms(rooms, n);
+	}
+
+	else
+	{
+		cout << NO_ROOM_FOUND << endl;
+	}
+}
+
+/// <summary>
+/// Choosing price by the user
+/// </summary>
+void SelectSeats()
+{
+	PrintDelay("Choose a number of seats: ");
+
+	int seats = VerifyInput();
+
+	PrintRoomsBySeats(seats);
+}
+
+
+#pragma endregion
 
 
 /// <summary>
