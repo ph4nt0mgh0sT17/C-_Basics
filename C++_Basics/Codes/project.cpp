@@ -1,4 +1,4 @@
-#pragma region Includes
+﻿#pragma region Includes
 
 #include <iostream>
 #include <string>
@@ -28,13 +28,47 @@ struct Room
 	int RoomNumber;
 	int CapacitySeats;
 	int Price;
+	string Date = "";
 };
 
 #pragma endregion
 
+#pragma region CONST_VARIABLES
+
+/// <summary>
+/// Name of the application
+/// </summary>
+const string NAME_APP = "\t\tBook reservation\n"
+"==========================================================\n\n";
+
+/// <summary>
+/// Menu of the application
+/// </summary>
+const string MENU = "Menu:\n"
+"\t1 - Print all rooms.\n"
+"\t2 - Print all rooms due to criteria\n"
+"\t3 - Book a room\n"
+"\t4 - Export rooms into HTML\n"
+"\t5 - Exit application\n\n";
+
+const string CRITERIA = "Criteria:\n"
+"\t1 - Print due to price\n"
+"\t2 - Print due to date\n"
+"\t3 - Print due to seats\n"
+"\t4 - Cancel choice\n\n";
+
+const string FILENAME_MAIN = "rooms.csv";
+
+const string FILENAME_DATE = "dates.csv";
+
+const string NO_ROOM_FOUND = "No room found.";
+
+const int DELAY = 10;
+
+#pragma endregion
 
 #pragma region Function headers
-
+void PrintDelay(string text, int delay = DELAY);
 void PrintTitle();
 void PrintMenu();
 void PrintCriteria();
@@ -49,47 +83,14 @@ bool PrintAllRooms();
 void PrintMenuCriteria();
 void PrintRoomsByPrice(int price);
 void SelectPrice();
+void SelectDate();
 
 #pragma endregion 
 
 
 
 
-#pragma region CONST_VARIABLES
 
-/// <summary>
-/// Name of the application
-/// </summary>
-const string NAME_APP = "\t\tBook reservation\n"
-					"==========================================================\n\n";
-
-/// <summary>
-/// Menu of the application
-/// </summary>
-const string MENU = "Menu:\n"
-						"\t1 - Print all rooms.\n"
-						"\t2 - Print all rooms due to criteria\n"
-						"\t3 - Book a room\n" 
-						"\t4 - Export rooms into HTML\n"
-						"\t5 - Exit application\n\n";
-
-const string CRITERIA = "Criteria:\n"
-							"\t1 - Print due to price\n"
-							"\t2 - Print due to date\n"
-							"\t3 - Print due to seats\n"
-							"\t4 - Cancel choice\n\n";
-
-const string END = "Exit of the application.";
-
-const string FILENAME_MAIN = "rooms.csv";
-
-const string FILENAME_DATE = "dates.csv";
-
-const string NO_ROOM_FOUND = "No room found.";
-
-const int DELAY = 10;
-
-#pragma endregion
 
 int main(void)
 {
@@ -106,7 +107,23 @@ int main(void)
 		choice = VerifyInput(5);
 	}
 
-	cout << END << endl;
+	ifstream rooms("END.txt");
+
+	if (!rooms.is_open())
+	{
+		return NULL;
+	}
+
+	string line;
+
+	while (rooms.good())
+	{
+		getline(rooms, line);
+
+		PrintDelay(line, 5);
+		cout << endl;
+
+	}
 
 #ifndef __PROGTEST__
 	system("pause");
@@ -122,12 +139,12 @@ int main(void)
 /// Prints given text in delays. Just visual feature.
 /// </summary>
 /// <param name="text">Text to be printed</param>
-void PrintDelay(string text)
+void PrintDelay(string text, int delay)
 {
 	for (unsigned int i = 0; i < text.length(); i++)
 	{
 		cout << text.at(i);
-		Sleep(DELAY);
+		Sleep(delay);
 	}
 }
 
@@ -403,11 +420,24 @@ Room *Load(Room *rooms, int &n, Room room)
 /// <param name="room">Current room</param>
 void PrintRoom(Room room)
 {
-	string textToBePrinted = "Room: " + to_string(room.RoomNumber) + 
-		" located on " + to_string(room.Floor) + 
-		". floor has capacity of : " + to_string(room.CapacitySeats) + 
-		" seats. Costs : " + to_string(room.Price) + 
-		" CZK. Its ID is : " + to_string(room.Id) + "\n";
+	string textToBePrinted = "";
+	if (room.Date == "")
+	{
+		textToBePrinted = "Room: " + to_string(room.RoomNumber) +
+			"\t located on " + to_string(room.Floor) +
+			". floor has capacity of : " + to_string(room.CapacitySeats) +
+			" seats.\t Costs : " + to_string(room.Price) +
+			" CZK.\t Its ID is : " + to_string(room.Id) + "\n";
+	}
+
+	else
+	{
+		textToBePrinted = "Room: " + to_string(room.RoomNumber) +
+			"\t located on " + to_string(room.Floor) +
+			". floor has capacity of : " + to_string(room.CapacitySeats) +
+			" seats.\t Costs : " + to_string(room.Price) +
+			" CZK.\t Its ID is : " + to_string(room.Id) + "\t Reservation: " + room.Date + "\n";
+	}
 
     cout << textToBePrinted;
 	Sleep(40);
@@ -462,7 +492,7 @@ Room *GetAllRooms(int &n)
 
 	rooms.close();
 
-	/*rooms.open(FILENAME_DATE);
+	rooms.open(FILENAME_DATE);
 
 	if (!rooms.is_open())
 	{
@@ -473,12 +503,30 @@ Room *GetAllRooms(int &n)
 
 	while (rooms.good())
 	{
+		bool foundId = false;
 		getline(rooms, line);
 		if (line != "")
 		{
-			
+			string *data = GetRoomData(line, 2);
+			for (int i = 0; i < n; i++)
+			{
+				if (roomsArray[i].Id == stoi(data[0]))
+				{
+					roomsArray[i].Date = data[1];
+					foundId = true;
+				}
+
+			}
+
+			if (!foundId)
+			{
+				cout << "Wrong ID in .csv file.";
+				return NULL;
+			}
 		}
-	}*/
+	}
+
+	rooms.close();
 
 	return roomsArray;
 }
@@ -492,6 +540,11 @@ bool PrintAllRooms()
 	int n = 0;
 
 	Room *rooms = GetAllRooms(n);
+
+	if (rooms == NULL)
+	{
+		return false;
+	}
 	
 	PrintRooms(rooms, n);
 
@@ -514,7 +567,7 @@ void ChooseCriteria(int choice)
 			break;
 
 		case 2:
-			//
+			SelectDate();
 			break;
 
 		case 3:
@@ -546,6 +599,24 @@ bool GetRoomsByPrice(Room *&rooms, int &n, int price)
 		}
 	}
 
+	// Sort rooms array - BubbleSort
+	bool exchangeDone = false;
+
+	do
+	{
+		exchangeDone = false;
+
+		for (int i = 0; i < index-1; i++)
+		{
+			if (roomsPrice[i].Price > roomsPrice[i + 1].Price)
+			{
+				swap(roomsPrice[i], roomsPrice[i + 1]);
+				exchangeDone = true;
+			}
+		}
+	}
+	while (exchangeDone);
+
 	if (roomFound)
 	{
 		delete[] rooms;
@@ -563,6 +634,8 @@ bool GetRoomsByPrice(Room *&rooms, int &n, int price)
 		delete[] rooms;
 		rooms = nullptr;
 	}
+
+	
 
 	return roomFound;
 }
@@ -606,16 +679,239 @@ void SelectPrice()
 
 void PrintRoomsByDate(string date)
 {
+	int length = 0;
 
+	Room *roomsDate = GetAllRooms(length);
+
+	bool foundRoom = false;
+	for (int i = 0; i < length; i++)
+	{
+		if (roomsDate[i].Date == date)
+		{
+			PrintRoom(roomsDate[i]);
+			foundRoom = true;
+		}
+	}
+
+	if (!foundRoom)
+	{
+		cout << endl;
+		PrintDelay(NO_ROOM_FOUND);
+		cout << endl << endl;
+	}
+
+	delete[] roomsDate;
+	roomsDate = nullptr;
+}
+
+bool isLeapYear(int year)
+{
+	if (year % 4 == 0)
+	{
+		if (year % 100 == 0)
+		{
+			if (year % 400 == 0)
+			{
+				return true;
+			}
+
+			else
+			{
+				return false;
+			}
+		}
+
+		else
+		{
+			return true;
+		}
+	}
+
+	else
+	{
+		return false;
+	}
+}
+
+bool CheckDate(int day, int month, int year)
+{
+	int *daysMonth = new int[12]{ 31,28,31,30,31,30,31,31,30,31,30,31 };
+
+	if (month == 2)
+	{
+		if (isLeapYear(year))
+		{
+			if (day <= 29)
+			{
+				return true;
+			}
+
+			else
+			{
+				return false;
+			}
+		}
+
+		else 
+		{
+			if (day <= 28)
+			{
+				return true;
+			}
+
+			else
+			{
+				return false;
+			}
+		}
+	}
+
+	if (day <= daysMonth[month - 1])
+	{
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+
+	if (month < 1 || month > 12)
+	{
+		return false;
+	}
+	
+}
+
+bool VerifyDateInput(string &date)
+{
+	string year, month, day;
+	year = month = day = "";
+	
+	bool isGap = false;
+	bool isDot = false;
+
+	bool isDay = true;
+	bool isMonth = false;
+	bool isYear = false;
+
+	for (unsigned int i = 0; i < date.length(); i++)
+	{
+		if ((int)date.at(i) >= 48 && (int)date.at(i) <= 57)
+		{
+			if (isDay)
+			{
+				day += date.at(i);
+			}
+
+			if (isMonth)
+			{
+				month += date.at(i);
+			}
+
+			if (isYear)
+			{
+				year += date.at(i);
+			}
+
+			isDot = false;
+		}
+
+		else if (date.at(i) == ' ')
+		{
+			if (isGap)
+			{
+				cout << endl;
+				PrintDelay("Wrong input.");
+				cout << endl << endl;
+				return false;
+			}
+			isGap = true;
+		}
+
+		else if (date.at(i) == '.')
+		{
+			if (isYear)
+			{
+				cout << endl;
+				PrintDelay("Wrong input.");
+				cout << endl << endl;
+				return false;
+			}
+
+			if (isDot)
+			{
+				cout << endl;
+				PrintDelay("Wrong input.");
+				cout << endl << endl;
+				return false;
+			}
+			isDot = true;
+
+			if (isDay)
+			{
+				isDay = false;
+				isMonth = true;
+			}
+
+			else if (isMonth)
+			{
+				isMonth = false;
+				isYear = true;
+			}
+
+			isGap = false;
+		}
+
+		else
+		{
+			cout << endl;
+			PrintDelay("Wrong input.");
+			cout << endl << endl;
+			return false;
+		}
+
+		
+
+	}
+
+	if (day == "" || month == "" || year == "")
+	{
+		cout << endl;
+		PrintDelay("Wrong input.");
+		cout << endl << endl;
+		return false;
+	}
+
+	if (!CheckDate(stoi(day), stoi(month), stoi(year)))
+	{
+		cout << endl;
+		PrintDelay("Wrong date.");
+		cout << endl << endl;
+		return false;
+	}
+	
+	date = to_string(stoi(day)) + ". " + to_string(stoi(month)) + ". " + to_string(stoi(year));
+
+	return true;
 }
 
 void SelectDate()
 {
-	cout << "Select a date (dd.mm.yyyy): ";
+	PrintDelay("Select a date (dd.mm.yyyy) or (dd. mm. yyyy): ");
+	string date;
+	getline(cin, date);
 
-	int price = VerifyInput();
+	if (!VerifyDateInput(date))
+	{
+		cin.clear();
+		return;
+	}
 
-	PrintRoomsByPrice(price);
+	cin.clear();
+
+	PrintRoomsByDate(date);
+
 }
 
 #pragma endregion
