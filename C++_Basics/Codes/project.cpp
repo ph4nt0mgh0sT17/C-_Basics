@@ -28,7 +28,9 @@ struct Room
 	int RoomNumber;
 	int CapacitySeats;
 	int Price;
-	string Date = "";
+	int NumberReservations = 0;
+	string *Dates = new string[0];
+	
 };
 
 #pragma endregion
@@ -57,11 +59,26 @@ const string CRITERIA = "Criteria:\n"
 "\t3 - Print due to seats\n"
 "\t4 - Cancel choice\n\n";
 
+const string HTML_START =
+"<!DOCTYPE html>"
+"<html>"
+"	<head>"
+"		<link rel = \"stylesheet\" type = \"text/css\" href = \"styles.css\">"
+"		<title>Book reservation</title>"
+"	</head>\n\n"
+
+"<body>"
+"	<img class = \"profile\" src = \"profile.jpg\" alt = \"Avatar\">"
+"	<h3>David Miko</h3>"
+"	<h3>Best rekter in the world</h3>\n";
+
 const string FILENAME_MAIN = "rooms.csv";
 
 const string FILENAME_DATE = "dates.csv";
 
 const string NO_ROOM_FOUND = "No room found.";
+
+const string HTML_FILE = "room.html";
 
 const int DELAY = 10;
 
@@ -85,13 +102,10 @@ void PrintRoomsByPrice(int price);
 void SelectPrice();
 void SelectDate();
 void SelectSeats();
+void BookRoom();
+void ExportToHTML();
 
 #pragma endregion 
-
-
-
-
-
 
 int main(void)
 {
@@ -193,10 +207,10 @@ void ChooseMenu(int choice)
 			break;
 
 		case 3:
-			// TODO: Print all rooms by the price
+			BookRoom();
 			break;
 		case 4:
-			// TODO: Export rooms to HTML
+			ExportToHTML();
 			break;
 	}
 }
@@ -331,10 +345,9 @@ bool IsNumberValid(string number)
 string *GetRoomData(string roomData, int n)
 {
 	string *data = new string[n];
-	int *cislo = new int[45];
-	string current_element = "";
+	string currentElement = "";
 
-	int current_index = 0;
+	int currentIndex = 0;
 
 	for (unsigned int i = 0; i < roomData.length(); i++)
 	{
@@ -342,20 +355,20 @@ string *GetRoomData(string roomData, int n)
 
 		if (currentChar == ',')
 		{
-			data[current_index] = current_element;
-			current_element = "";
-			current_index++;
+			data[currentIndex] = currentElement;
+			currentElement = "";
+			currentIndex++;
 
 			continue;
 		}
 
 		if (currentChar != ',')
 		{
-			current_element += currentChar;
+			currentElement += currentChar;
 		}
 	}
 	
-	data[current_index] = current_element;
+	data[currentIndex] = currentElement;
 	
 
 	return data;
@@ -422,7 +435,7 @@ Room *Load(Room *rooms, int &n, Room room)
 void PrintRoom(Room room)
 {
 	string textToBePrinted = "";
-	if (room.Date == "")
+	if (room.NumberReservations < 1)
 	{
 		textToBePrinted = "Room: " + to_string(room.RoomNumber) +
 			"\t located on " + to_string(room.Floor) +
@@ -437,7 +450,20 @@ void PrintRoom(Room room)
 			"\t located on " + to_string(room.Floor) +
 			". floor has capacity of : " + to_string(room.CapacitySeats) +
 			" seats.\t Costs : " + to_string(room.Price) +
-			" CZK.\t Its ID is : " + to_string(room.Id) + "\t Reservation: " + room.Date + "\n";
+			" CZK.\t Its ID is : " + to_string(room.Id) + "\t Reservation: ";
+
+		for (int i = 0; i < room.NumberReservations; i++)
+		{
+			if (i != room.NumberReservations - 1)
+			{
+				textToBePrinted += room.Dates[i] + " and ";
+			}
+
+			else
+			{
+				textToBePrinted += room.Dates[i] + "\n";
+			}
+		}
 	}
 
     cout << textToBePrinted;
@@ -457,6 +483,47 @@ void PrintRooms(Room *rooms, int n)
 	}
 
 	cout << endl;
+}
+
+string *LoadDate(string *dates, int &length, string dateToLoad)
+{
+	if (length == 0)
+	{
+		
+		string *datesNew = new string[1];
+		datesNew[0] = dateToLoad;
+
+		length++;
+
+		delete[] dates;
+		dates = nullptr;
+		
+		dates = datesNew;
+
+		return dates;
+
+	}
+
+	else
+	{
+		
+		string *datesNew = new string[length + 1];
+		
+		for (int i = 0; i < length; i++)
+		{
+			datesNew[i] = dates[i];
+		}
+		datesNew[length] = dateToLoad;
+
+		length++;
+
+		delete[] dates;
+		dates = nullptr;
+
+		dates = datesNew;
+		return dates;
+	}
+	
 }
 
 /// <summary>
@@ -513,7 +580,25 @@ Room *GetAllRooms(int &n)
 			{
 				if (roomsArray[i].Id == stoi(data[0]))
 				{
-					roomsArray[i].Date = data[1];
+					if (roomsArray[i].NumberReservations == 0)
+					{
+						roomsArray[i].Dates = LoadDate(roomsArray[i].Dates, roomsArray[i].NumberReservations, data[1]);
+					}
+
+					else if (roomsArray[i].NumberReservations >= 1)
+					{
+						for (int j = 0; j < roomsArray[i].NumberReservations; j++)
+						{
+							if (roomsArray[i].Dates[j] == data[1])
+							{
+								cout << "Duplicate reservation in .csv file.";
+								return NULL;
+							}
+						}
+
+						roomsArray[i].Dates = LoadDate(roomsArray[i].Dates, roomsArray[i].NumberReservations, data[1]);
+					}
+
 					foundId = true;
 				}
 
@@ -521,7 +606,9 @@ Room *GetAllRooms(int &n)
 
 			if (!foundId)
 			{
-				cout << "Wrong ID in .csv file.";
+				cout << endl;
+				PrintDelay("Wrong ID in .csv file.");
+				cout << endl << endl;
 				return NULL;
 			}
 		}
@@ -687,10 +774,13 @@ void PrintRoomsByDate(string date)
 	bool foundRoom = false;
 	for (int i = 0; i < length; i++)
 	{
-		if (roomsDate[i].Date == date)
+		for (int j = 0; j < roomsDate[i].NumberReservations; j++)
 		{
-			PrintRoom(roomsDate[i]);
-			foundRoom = true;
+			if (roomsDate[i].Dates[j] == date)
+			{
+				PrintRoom(roomsDate[i]);
+				foundRoom = true;
+			}
 		}
 	}
 
@@ -1033,6 +1123,310 @@ void PrintMenuCriteria()
 	}
 
 	cout << endl << "Choice cancelled." << endl << endl;
+}
+
+void BookRoom()
+{
+	if (!PrintAllRooms())
+	{
+		PrintDelay("No room was found.");
+	}
+
+	int id;
+	int indexRoom = 0;
+
+	int length = 0;
+	Room *rooms = GetAllRooms(length);
+
+	while (true)
+	{
+		PrintDelay("Choose the ID of the room you want to book: ");
+
+
+
+		cin >> id;
+
+		if (cin.fail())
+		{
+			cout << endl;
+			PrintDelay("You need to type a number.");
+			cout << endl << endl;
+
+			cin.clear();
+			continue;
+		}
+		
+
+
+		cin.ignore();
+
+		bool idFound = false;
+
+		for (int i = 0; i < length; i++)
+		{
+			if (rooms[i].Id == id)
+			{
+				indexRoom = i;
+				idFound = true;
+				break;
+			}
+		}
+
+		if (!idFound)
+		{
+			cout << endl;
+			PrintDelay("The ID doesn't exist.");
+			cout << endl << endl;
+			continue;
+		}
+
+		cout << endl;
+		break;
+	}
+	
+	bool wrongDate = false;
+	while (true)
+	{
+		wrongDate = false;
+		PrintDelay("Select a date for reservation (dd.mm.yyyy) or (dd. mm. yyyy): ");
+		string date;
+		getline(cin, date);
+
+		if (!VerifyDateInput(date))
+		{
+			cin.clear();
+			return;
+		}
+
+		cin.clear();
+
+		if (rooms[indexRoom].NumberReservations == 0)
+		{
+			rooms[indexRoom].Dates = LoadDate(rooms[indexRoom].Dates, rooms[indexRoom].NumberReservations, date);
+
+			// Update .csv file -> only date files (rooms are same)
+
+			ofstream dates(FILENAME_DATE);
+
+			if (!dates.is_open())
+			{
+				PrintDelay("Error with opening file.");
+				cout << endl << endl;
+				return;
+			}
+
+			string dataFilename = "id_mistnosti,den_rezervace\n";
+
+			for (int i = 0; i < length; i++)
+			{
+				if (rooms[i].NumberReservations > 0)
+				{
+					for (int j = 0; j < rooms[i].NumberReservations; j++)
+					{
+						dataFilename += to_string(rooms[i].Id) + "," + rooms[i].Dates[j] + "\n";
+					}
+				}
+			}
+
+			dates << dataFilename;
+
+			dates.close();
+
+			delete[] rooms;
+			rooms = nullptr;
+
+			break;
+		}
+
+		else if (rooms[indexRoom].NumberReservations > 0)
+		{
+			for (int i = 0; i < rooms[indexRoom].NumberReservations; i++)
+			{
+				if (rooms[indexRoom].Dates[i] == date)
+				{
+					PrintDelay("The date is already booked.");
+					cout << endl << endl;
+
+					wrongDate = true;
+					break;
+				}
+			}
+
+			if (wrongDate)
+			{
+				continue;
+			}
+
+			rooms[indexRoom].Dates = LoadDate(rooms[indexRoom].Dates, rooms[indexRoom].NumberReservations, date);
+
+			// Update .csv file -> only date files (rooms are same)
+
+			ofstream dates(FILENAME_DATE);
+
+			if (!dates.is_open())
+			{
+				PrintDelay("Error with opening file.");
+				cout << endl << endl;
+				return;
+			}
+
+			string dataFilename = "id_mistnosti,den_rezervace\n";
+
+			for (int i = 0; i < length; i++)
+			{
+				if (rooms[i].NumberReservations > 0)
+				{
+					for (int j = 0; j < rooms[i].NumberReservations; j++)
+					{
+						dataFilename += to_string(rooms[i].Id) + "," + rooms[i].Dates[j] + "\n";
+					}
+				}
+			}
+
+			dates << dataFilename;
+
+			dates.close();
+			break;
+		}
+	}
+
+}
+
+void ExportToHTML()
+{
+	if (!PrintAllRooms())
+	{
+		PrintDelay("No room was found.");
+	}
+
+	int id;
+	Room currentRoom;
+
+	int length = 0;
+	Room *rooms = GetAllRooms(length);
+
+	while (true)
+	{
+		PrintDelay("Choose the ID of the room you want to export: ");
+
+
+
+		cin >> id;
+
+		if (cin.fail())
+		{
+			cout << endl;
+			PrintDelay("You need to type a number.");
+			cout << endl << endl;
+
+			cin.clear();
+			continue;
+		}
+
+		cin.ignore();
+
+		bool idFound = false;
+
+		for (int i = 0; i < length; i++)
+		{
+			if (rooms[i].Id == id)
+			{
+				currentRoom = rooms[i];
+				idFound = true;
+				break;
+			}
+		}
+
+		if (!idFound)
+		{
+			cout << endl;
+			PrintDelay("The ID doesn't exist.");
+			cout << endl << endl;
+			continue;
+		}
+
+		cout << endl;
+		break;
+	}
+
+
+	string htmlStream = HTML_START;
+
+	ofstream html(HTML_FILE);
+
+	htmlStream +=
+		"<h1 class = \"title\">Room ID: " + to_string(currentRoom.Id) + "</h1>";
+
+	if (currentRoom.NumberReservations > 0)
+	{
+		htmlStream +=
+			"<table id=\"reservations\">"
+			"	<tr>"
+			"	<th>ID</th>"
+			"	<th>Number</th>"
+			"	<th>Seats</th>"
+			"	<th>Price</th>"
+			"	<th colspan = " + to_string(currentRoom.NumberReservations) + ">Reservations</th>"
+			"</tr>";
+	}
+
+	else
+	{
+		htmlStream +=
+			"<table id=\"reservations\">"
+			"	<tr>"
+			"	<th>ID</th>"
+			"	<th>Number</th>"
+			"	<th>Seats</th>"
+			"	<th>Price</th>"
+			"	<th>Reservations</th>"
+			"</tr>";
+	}
+
+	htmlStream +=
+		"<tr>"
+		"	<td>" + to_string(currentRoom.Id) + "</td>"
+		"	<td>" + to_string(currentRoom.RoomNumber) + "</td>"
+		"	<td>" + to_string(currentRoom.CapacitySeats) + "</td>"
+		"	<td>" + to_string(currentRoom.Price) + "</td>";
+
+	if (currentRoom.NumberReservations > 0)
+	{
+		for (int i = 0; i < currentRoom.NumberReservations; i++)
+		{
+			htmlStream +=
+				"	<td>" + currentRoom.Dates[i] + "</td>";
+		}
+		htmlStream +=
+			"</table>"
+
+			"</body>"
+			"</html>";
+
+	}
+
+	else
+	{
+		htmlStream +=
+			"<td>Not found any</td>"
+			"</table>"
+
+			"</body>"
+			"</html>";
+	}
+	html << htmlStream;
+	
+			
+	
+	html.close();
+	
+	delete[] rooms;
+	rooms = nullptr;
+
+	cout << endl;
+	PrintDelay("Room was exported successfully.");
+	cout << endl << endl;
+
 }
 
 #pragma endregion
