@@ -14,7 +14,7 @@ std::string GetReport(Account* account, Client* client)
 {
 	std::string report = "";
 
-	report += "Client: " + client->GetName() + "; His account has these statistics: Balance: " + std::to_string((int)account->GetBalance()) + "; Interest rate: " + std::to_string(account->GetInterestRate());
+	report += "Client " + std::to_string(client->GetObjectsCount()) + ": " + client->GetName() + "; His account has these statistics: Balance: " + std::to_string((int)account->GetBalance()) + "; Interest rate: " + std::to_string(account->GetInterestRate());
 
 	return report;
 
@@ -33,13 +33,17 @@ int main(void)
 
 	std::cout << GetReport(account, client) << std::endl;
 
-	account->Deposit(15000);
+	Client* client1 = airbank->CreateClient(15, "Davidek");
 
-	std::cout << GetReport(account, client) << std::endl;
+	Account* account1 = airbank->CreateAccount(1547, client1, 3);
 
-	account->AddInterest();
+	std::cout << GetReport(account1, client1) << std::endl;
 
-	std::cout << GetReport(account, client) << std::endl;
+	Client* client2 = airbank->CreateClient(15, "Davidek");
+
+	Account* account2 = airbank->CreateAccount(1547, client2, 3);
+
+	std::cout << GetReport(account2, client2) << std::endl;
 
 
 	getchar();
