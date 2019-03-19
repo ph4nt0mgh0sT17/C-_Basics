@@ -1,4 +1,7 @@
-# C++ Basics
-Here you can learn everything I have about C++ at school.
+# Important scripts
 
-You will learn here about algorithms, OOP features and so on. I will add these things into branches.
+Here I will update some important scripts from C++ about some things like multiplying matrices (**matrix**), converting from binary and so on.
+
+I'll keep you updated!
+
+See you soon, fellas!
