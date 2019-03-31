@@ -18,9 +18,6 @@ School::School(std::string name)
 
 	this->students = new Student*[1];
 	this->studentsCount = 0;
-
-	this->teachers = new Teacher*[1];
-	this->teachersCount = 0;
 }
 
 void School::AddStudent(Student * student)
